@@ -1,5 +1,5 @@
 import math
-from DataParse import game_rating_freq_dictionary
+# from DataParse import game_rating_freq_dictionary
 # from DataParse import game_with_max_ratings
 # print(game_with_max_ratings)
 
@@ -574,23 +574,27 @@ def score_formula(p,n,z = 1.96):
 # game_rating_freq_dictionary = game_rating_freq_dictionary[:1]
 example = [('文絵のために (For Fumie)', {9.0: 1, 8.0: 1, 7.6: 1, 7.0: 9, 6.8: 1, 6.3: 1, 6.0: 7, 5.0: 6, 4.0: 2, 3.0: 2})]
 
-game_wilson_score = []
-for game in example:
-    # print(game) #('文絵のために (For Fumie)', {9.0: 1, 8.0: 1, 7.6: 1, 7.0: 9, 6.8: 1, 6.3: 1, 6.0: 7, 5.0: 6, 4.0: 2, 3.0: 2})
-    rating_freq = game[1]
-    # print(rating_freq)  {10.0: 3, 9.0: 8, 8.5: 1, 8.0: 13, 7.5: 1, 7.47: 1, 7.0: 10, 6.5: 3, 6.0: 9, 5.0: 2, 3.0: 1}
-    n = sum(rating_freq.values())
-    weighted_upper_score = 0
-    weighted_lower_score = 0
-    for k,v in rating_freq.items():
-        p = v/n
-        bounds = score_formula(p,n)
-        weighted_upper_score += k * bounds[0]
-        weighted_lower_score += k * bounds[1]
-        print(score_formula(p,n)) # (0.14533409093271313, 0.005061361365853357),...
-    print(weighted_upper_score, weighted_lower_score, weighted_upper_score/2+weighted_lower_score/2)
+def confidence_interval(games):
+    results = []
+    for game in games:
+        # print(game) #('文絵のために (For Fumie)', {9.0: 1, 8.0: 1, 7.6: 1, 7.0: 9, 6.8: 1, 6.3: 1, 6.0: 7, 5.0: 6, 4.0: 2, 3.0: 2})
+        rating_freq = game[1]
+        # print(rating_freq)  {10.0: 3, 9.0: 8, 8.5: 1, 8.0: 13, 7.5: 1, 7.47: 1, 7.0: 10, 6.5: 3, 6.0: 9, 5.0: 2, 3.0: 1}
+        n = sum(rating_freq.values())
+        weighted_upper_score = 0
+        weighted_lower_score = 0
+        for k,v in rating_freq.items():
+            p = v/n
+            bounds = score_formula(p,n)
+            weighted_upper_score += k * bounds[0]
+            weighted_lower_score += k * bounds[1]
+            average_score = weighted_upper_score/2 + weighted_lower_score/2
+            # print(score_formula(p,n)) # (0.14533409093271313, 0.005061361365853357),...
+        result = (game[0], (weighted_lower_score, weighted_upper_score, average_score))
+        results.append(result)    
+    return results
+# print(confidence_interval([pandemic]))
 
-# for k,v in pandemic[1].items():
 
 
 
